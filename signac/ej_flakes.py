@@ -1,41 +1,20 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[41]:
-
-
-import warnings
-warnings.filterwarnings('ignore')
 import flowermd
-import hoomd
 import gsd
-import matplotlib.pyplot as plt
-import numpy as np
 import gsd.hoomd
-from flowermd.base import Pack, Simulation
-from flowermd.library import KremerGrestBeadSpring, LJChain
-from flowermd.utils import get_target_box_number_density
-from flowermd.base import Molecule
-from flowermd.library import Graphene
-from flowermd.library.forcefields import BeadSpring
-from flowermd.base.forcefield import BaseHOOMDForcefield
-import unyt as u
 import hoomd
+import matplotlib.pyplot as plt
 import mbuild as mb
 import numpy as np
+import warnings
 from cmeutils.visualize import FresnelGSD
-cpu = hoomd.device.CPU()
-
-
-# In[42]:
-
-
-import mbuild as mb
+from flowermd.base import Pack, Simulation, System, Molecule
+from flowermd.base.forcefield import BaseHOOMDForcefield
+from flowermd.library import KremerGrestBeadSpring, LJChain
+from flowermd.library.forcefields import BeadSpring
+from flowermd.utils import get_target_box_number_density
 from mbuild.compound import Compound
 from mbuild.lattice import Lattice
-
-from flowermd.base import Molecule, System
-
+warnings.filterwarnings('ignore')
 
 class Graphene(System):
     def __init__(
@@ -47,21 +26,20 @@ class Graphene(System):
         periodicity=(True, True, False),
     ):
         surface = mb.Compound(periodicity=periodicity)
-        scale = 1.0 # 1.0 for testing, 0.246 for graphene bond lengths
-        spacings = [s * scale for s in [1.0, 1.0, 1.0]]
-        points = [[0, 0, 0], [2/3, 1/3, 0]]
+        a = 3**.5
         lattice = Lattice(
-            lattice_spacing=spacings,
-            angles=[90, 90, 120],
-            lattice_points={"A": points},
-        )
-        carbon = Compound(name="C", element="C")
+            lattice_spacing=[a,a,a],
+            lattice_vectors=  [[a,0,0],[a/2,3/2,0],[0,0,1]],
+            lattice_points={"A": [[1/3,1/3,0], [2/3, 2/3, 0]]},
+        ) 
+        Flakium = Compound(name="F", element="F") # defines a carbon atom that will be used to populate lattice points
         layers = lattice.populate(
-            compound_dict={"A": carbon}, x=x_repeat, y=y_repeat, z=n_layers
-        )
-        surface.add(layers)
-        surface.freud_generate_bonds("C", "C", dmin=0.3*scale, dmax=0.6*scale)
-        surface_mol = Molecule(num_mols=1, compound=surface)
+            compound_dict={"A": Flakium}, x=x_repeat, y=y_repeat, z=n_layers
+        ) # populates the lattice using the previously defined carbon atom for every "A" site, repeated in all x,y, and z directions
+        surface.add(layers) # adds populated carbon lattice layers to the 'surface' compound, which represents our graphene structure 
+        surface.freud_generate_bonds("F", "F", dmin=0.9, dmax=1.1) # generates bonds depending on input distance range, scales with lattice
+        surface_mol = Molecule(num_mols=1, compound=surface) # wraps into a Molecule object, creating "1" instance of this molecule
+
         super(Graphene, self).__init__(
             molecules=[surface_mol],
             base_units=base_units,
@@ -69,70 +47,36 @@ class Graphene(System):
 
     def _build_system(self):
         return self.all_molecules[0]
-
-
-# In[43]:
-
-
 #OK, so we want to initialize a system with some chains and some flakes
-kg_chain = LJChain(lengths=10,num_mols=250)
+kg_chain = LJChain(lengths=20,num_mols=200)
 sheet = Graphene(x_repeat=5, y_repeat=5, n_layers=1, periodicity=(False, False, False))
-system = Pack(molecules=[Molecule(compound=sheet.all_molecules[0], num_mols=25), kg_chain], density=0.2, packing_expand_factor = 5)
-
-
-# In[45]:
-
-
-s = 1.0 # 1.0 for scaling
-
-
-# In[46]:
-
-
-ff = BeadSpring(r_cut=2.5,
-        beads={"A": dict(epsilon=.05, sigma=1.0*s),
-               "C": dict(epsilon=0.05, sigma=1.0*s)},
-        bonds={"C-C": dict(r0=0.57736*s, k=500), "A-A": dict(r0=1.1, k=0.01)},
-        angles={"A-A-A": dict(t0=np.pi, k=0.1),
-                "C-C-C": dict(t0=2*np.pi/3., k=500)},
-        dihedrals={"A-A-A-A": dict(phi0=0.0, k=0.1, d=-1, n=1), "C-C-C-C": dict(phi0=0.1, k=0.1, d=-1, n=1)})
-
-
-# In[47]:
-
+system = Pack(molecules=[Molecule(compound=sheet.all_molecules[0], num_mols=12), kg_chain], density=0.6, packing_expand_factor = 6, seed=2,unique_molecules = True, overlap = 1.1)
 
 # this FF is for research question
+# WCA = 2.5 **1/6, kT = 3.0, needs thousand chains, maybe 10-12 flakes. large system, need lots of steps. 5e6 probably good. 
 ff = BeadSpring(
-    r_cut=2**(1/6) * s,  # WCA cutoff (purely repulsive)
+    r_cut=2.5**(1/6),  
     beads={
-        "A": dict(epsilon=1.0, sigma=1.0 * s),  # chains
-        "C": dict(epsilon=1.0, sigma=1.0 * s),  # flakes
+        "A": dict(epsilon=1.0, sigma=1.0),  # chains
+        "F": dict(epsilon=1.0, sigma=1.0),  # flakes
     },
     bonds={
-        "C-C": dict(r0=0.57736 * s, k=500),
-        "A-A": dict(r0=1.0, k=500.0),  # increased k to avoid chain collapse
+        "F-F": dict(r0=1.0, k=1000),
+        "A-A": dict(r0=1.0, k=1000.0),  # increased k to avoid chain collapse
     },
     angles={
-        "A-A-A": dict(t0=np.pi, k=10.0),   # moderate stiffness for chains
-        "C-C-C": dict(t0=2 * np.pi / 3., k=500),
+        "A-A-A": dict(t0=2* np.pi / 3., k=100.0),   # moderate stiffness for chains
+        "F-F-F": dict(t0=2 * np.pi / 3., k=5000),
     },
     dihedrals={
-        "A-A-A-A": dict(phi0=0.0, k=1.0, d=-1, n=1),
-        "C-C-C-C": dict(phi0=0.1, k=0.1, d=-1, n=1),
+        "A-A-A-A": dict(phi0=0.0, k=0, d=-1, n=2), #need to turn this on later, messed up with straight chains
+        "F-F-F-F": dict(phi0=0.0, k=500, d=-1, n=2),
     }
 )
-
-
-# In[49]:
-
-
-sim = Simulation(initial_state=system.hoomd_snapshot, forcefield=ff.hoomd_forces, device=cpu, dt = 0.000001, gsd_write_freq=int(5000), log_file_name = "ej_flakes.txt")
-#sim.run_NVT(n_steps=5000, kT=0.001, tau_kt=1.0)
-sim.run_NVT(n_steps=5e9,kT=7, tau_kt = 0.1) #short for initial testing
+cpu = hoomd.device.CPU()
+sim = Simulation(initial_state=system.hoomd_snapshot, forcefield=ff.hoomd_forces, device=cpu, dt = 0.0005, gsd_write_freq=int(1000), log_file_name = "200_20mers.log", gsd_file_name = "200_20mers.gsd")
+sim.run_NVT(n_steps=1e8, kT=3, tau_kt=.1)
 sim.flush_writers()
-
-
-
-
-
-
+sim.save_restart_gsd("200_20mers_restart.gsd")
+sim.run_NVT(n_steps=1e8, kT=3, tau_kt=.1)
+sim.flush_writers()

@@ -7,6 +7,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=your_email@example.com
+#SBATCH --time=7-00:00:00
+
 
 # Activate conda and load HOOMD
 source ~/miniconda3/etc/profile.d/conda.sh

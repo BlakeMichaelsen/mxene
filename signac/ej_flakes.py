@@ -50,7 +50,7 @@ class Graphene(System):
 #OK, so we want to initialize a system with some chains and some flakes
 kg_chain = LJChain(lengths=20,num_mols=100)
 sheet = Graphene(x_repeat=5, y_repeat=5, n_layers=1, periodicity=(False, False, False))
-system = Pack(molecules=[Molecule(compound=sheet.all_molecules[0], num_mols=10), kg_chain], density=0.3, packing_expand_factor = 6, seed=2,unique_molecules = True, overlap = 1.1)
+system = Pack(molecules=[Molecule(compound=sheet.all_molecules[0], num_mols=10), kg_chain], density=0.3, packing_expand_factor = 6, seed=2,unique_molecules = True, overlap = 2.0)
 
 # this FF is for research question
 # WCA = 2.5 **1/6, kT = 3.0, needs thousand chains, maybe 10-12 flakes. large system, need lots of steps. 5e6 probably good. 

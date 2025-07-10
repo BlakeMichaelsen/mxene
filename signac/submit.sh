@@ -10,7 +10,7 @@
 
 # Activate conda and load HOOMD
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate flowermd  # Replace with your environment name
+conda activate flowermd-dev  # Replace with your environment name
 
 # Run the Python script
 python ej_flakes.py

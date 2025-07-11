@@ -1,10 +1,10 @@
 #!/bin/bash -l
 
 #SBATCH --error=logs/hoomd_%j.err
-#SBATCH --partition=gpu-l40
+#SBATCH --partition=gpu-v100
 #SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=40
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=your_email@example.com
 #SBATCH --time=7-00:00:00

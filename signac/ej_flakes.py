@@ -15,7 +15,10 @@ from flowermd.utils import get_target_box_number_density
 from mbuild.compound import Compound
 from mbuild.lattice import Lattice
 warnings.filterwarnings('ignore')
-
+dt = 0.0005
+N_chains = 500
+initial_dens = 0.0005
+cpu = hoomd.device.GPU()
 class Graphene(System):
     def __init__(
         self,
@@ -48,9 +51,10 @@ class Graphene(System):
     def _build_system(self):
         return self.all_molecules[0]
 #OK, so we want to initialize a system with some chains and some flakes
-kg_chain = LJChain(lengths=20,num_mols=100)
+kg_chain = LJChain(lengths=10,num_mols=N_chains)
 sheet = Graphene(x_repeat=5, y_repeat=5, n_layers=1, periodicity=(False, False, False))
-system = Pack(molecules=[Molecule(compound=sheet.all_molecules[0], num_mols=10), kg_chain], density=0.3, packing_expand_factor = 6, seed=2,unique_molecules = True, overlap = 2.0)
+system = Pack(molecules=[Molecule(compound=sheet.all_molecules[0], num_mols=10), kg_chain], 
+              density=initial_dens, packing_expand_factor = 6, seed=2)
 
 # this FF is for research question
 # WCA = 2.5 **1/6, kT = 3.0, needs thousand chains, maybe 10-12 flakes. large system, need lots of steps. 5e6 probably good. 
@@ -73,10 +77,8 @@ ff = BeadSpring(
         "F-F-F-F": dict(phi0=0.0, k=500, d=-1, n=2),
     }
 )
-cpu = hoomd.device.GPU()
-sim = Simulation(initial_state=system.hoomd_snapshot, forcefield=ff.hoomd_forces, device=cpu, dt = 0.0003, gsd_write_freq=int(1000), log_file_name = "100_20mers.log", gsd_file_name = "100_20mers.gsd")
-sim.run_NVT(n_steps=1e6, kT=3, tau_kt=.1)
-sim.flush_writers()
-#sim.save_restart_gsd("500_20mers_restart.gsd")
-#sim.run_NVT(n_steps=1e8, kT=3, tau_kt=.1)
+gsd = f"{N_chains}_10mer10f_{dt}dt.gsd"
+log = f"{N_chains}_10mer10f_{dt}dt.txt"
+sim = Simulation(initial_state=system.hoomd_snapshot, forcefield=ff.hoomd_forces, device=cpu, dt = dt, gsd_write_freq=int(1000), log_file_name = log, gsd_file_name = gsd)
+sim.run_NVT(n_steps=1e8, kT=7, tau_kt=dt*100)
 sim.flush_writers()

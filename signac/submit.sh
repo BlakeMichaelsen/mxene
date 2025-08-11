@@ -15,6 +15,6 @@ source ~/miniconda3/etc/profile.d/conda.sh
 conda activate flowermd-dev  # Replace with your environment name
 
 # Run the Python script
-python ej_flakes.py
+python sim_with_shrink.py
 
 

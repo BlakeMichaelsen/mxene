@@ -16,8 +16,8 @@ from mbuild.compound import Compound
 from mbuild.lattice import Lattice
 import unyt as u
 warnings.filterwarnings('ignore')
-dt = 0.0003
-N_chains = 500
+dt = 0.0005
+N_chains = 100
 initial_dens = 0.0005
 final_dens = 0.3
 cpu = hoomd.device.GPU()
@@ -80,9 +80,9 @@ ff = BeadSpring(
         "F-F-F-F": dict(phi0=0.0, k=500, d=-1, n=2),
     }
 )
-gsd = f"{N_chains}_10mer10f_{dt}dt_7kT_large.gsd"
-log = f"{N_chains}_10mer10f_{dt}dt_7kT_large.txt"
-sim = Simulation(initial_state=system.hoomd_snapshot, forcefield=ff.hoomd_forces, device=cpu, dt = dt, gsd_write_freq=int(1000), log_file_name = log, gsd_file_name = gsd)
+gsd = f"{N_chains}_10mer10f_{dt}dt_11kT_large.gsd"
+log = f"{N_chains}_10mer10f_{dt}dt_11kT_large.txt"
+sim = Simulation(initial_state=system.hoomd_snapshot, forcefield=ff.hoomd_forces, device=cpu, dt = dt, gsd_write_freq=int(10000), log_file_name = log, gsd_file_name = gsd)
 sim.run_update_volume(final_box_lengths=target_box, kT=6.0, n_steps=5e6,tau_kt=100*sim.dt,period=10,thermalize_particles=True)
-sim.run_NVT(n_steps=10e6, kT=7, tau_kt=dt*100)
+sim.run_NVT(n_steps=1e8, kT=11, tau_kt=dt*100)
 sim.flush_writers()

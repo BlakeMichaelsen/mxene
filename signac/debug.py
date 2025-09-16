@@ -17,7 +17,7 @@ from mbuild.lattice import Lattice
 import unyt as u
 warnings.filterwarnings('ignore')
 dt = 0.0005
-N_chains = 200
+N_chains = 0
 initial_dens = 0.0005
 final_dens = 0.3
 cpu = hoomd.device.GPU()
@@ -53,9 +53,9 @@ class Graphene(System):
     def _build_system(self):
         return self.all_molecules[0]
 #OK, so we want to initialize a system with some chains and some flakes
-kg_chain = LJChain(lengths=10,num_mols=N_chains)
+#kg_chain = LJChain(lengths=10,num_mols=N_chains)
 sheet = Graphene(x_repeat=5, y_repeat=5, n_layers=1, periodicity=(False, False, False))
-system = Pack(molecules=[Molecule(compound=sheet.all_molecules[0], num_mols=5), kg_chain], 
+system = Pack(molecules=Molecule(compound=sheet.all_molecules[0], num_mols=10), 
               density=initial_dens, packing_expand_factor = 6, seed=2)
 target_box = get_target_box_number_density(density=final_dens*u.Unit("nm**-3"),n_beads=(500+(N_chains*10)))
 
@@ -80,8 +80,8 @@ ff = BeadSpring(
         "F-F-F-F": dict(phi0=0.0, k=500, d=-1, n=2),
     }
 )
-gsd = f"{N_chains}_10mer5f_{dt}dt_5kT_large.gsd"
-log = f"{N_chains}_10mer5f_{dt}dt_5kT_large.txt"
+gsd = f"{N_chains}_10mer10f_{dt}dt_5kT_large.gsd"
+log = f"{N_chains}_10mer10f_{dt}dt_5kT_large.txt"
 sim = Simulation(initial_state=system.hoomd_snapshot, forcefield=ff.hoomd_forces, device=cpu, dt = dt, gsd_write_freq=int(15000), log_file_name = log, gsd_file_name = gsd)
 sim.run_update_volume(final_box_lengths=target_box, kT=6.0, n_steps=5e6,tau_kt=100*sim.dt,period=10,thermalize_particles=True)
 sim.run_NVT(n_steps=1e8, kT=5, tau_kt=dt*100)

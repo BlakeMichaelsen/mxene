@@ -1,12 +1,21 @@
 # mxene project
 Analyzing how entropy-driven aggregation drives phase separation in mxene-polymer systems
 
-Run the following in your zsh/bash command line:
+## ⚙️ Installation
 
-git clone git@github.com:eridanirojas/mxene.git
+Run the following in your terminal:
+
+# bash/zsh
+git clone git@github.com:eridanrojas/mxene.git
 cd mxene
+
+# Create the conda environment
 conda env create -f environment.yml
+
+# Activate the environment
 conda activate flowermd-dev
+
+# Launch Jupyter
 jupyter notebook
 
 

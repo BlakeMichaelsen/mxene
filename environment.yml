@@ -430,4 +430,3 @@ dependencies:
       - build==1.2.2.post1
       - flowermd==1.4.1
       - pyproject-hooks==1.2.0
-prefix: /bsuhome/eridanirojas/miniconda3/envs/flowermd-dev

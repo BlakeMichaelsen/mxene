@@ -7,6 +7,8 @@ Run the following in your terminal:
 
 # bash/zsh
 git clone git@github.com:eridanrojas/mxene.git
+
+# then navigate into mxene
 cd mxene
 
 # Create the conda environment

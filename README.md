@@ -15,7 +15,10 @@ cd mxene
 conda env create -f environment.yml
 
 # Activate the environment
-conda activate flowermd-dev
+conda activate mxene
+
+# If GPU compatible version required of hoomd, run
+conda install -c conda-forge "hoomd=*=gpu*"
 
 # Launch Jupyter
 jupyter notebook

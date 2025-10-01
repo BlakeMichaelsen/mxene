@@ -21,7 +21,8 @@ conda activate mxene
 conda install -c conda-forge "hoomd=*=gpu*"
 
 # Launch Jupyter
-jupyter notebook
+
+Run this at the command prompt: `jupyter notebook`
 
 
 Then, in order to run a small scale simulation, navigate to the example/ directory:

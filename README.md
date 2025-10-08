@@ -20,22 +20,20 @@ Run the following in your terminal:
 # If GPU compatible version required of hoomd, run
 `conda install -c conda-forge "hoomd=*=gpu*"`
 
-# Launch Jupyter
+# Launch Jupyter, run
 
-Run this at the command prompt: `jupyter notebook`
+`jupyter notebook`
 
 
-Then, in order to run a small scale simulation, navigate to the example/ directory:
+Then, in order to run a small scale simulation, navigate to the sims/ directory:
 
-- sim_no_shrink.ipynb = Our simulation without a shrink step written; will not work with dense systems
-- sim_with_shrink.ipynb = current working simulation you should use, shrink step is included allowing system to be packed loosely then shrunk to be dense, causing more interactions to occur
-- sim_with_randomwalk_chains.ipynb = a future notebook, has a shrink step but also manipulates the geometry of the chains is randomly set so that we may set a dihedral to be something other than zero
-- TPSvsN.ipynb = a notebook to graph TPS v. N
+- clean_sim.ipynb = current working simulation you should use, shrink step is included allowing system to be packed loosely then shrunk to be dense, causing more interactions to occur
+- clean_sim_with_randomwalk.ipynb = a future notebook, has a shrink step but also manipulates the geometry of the chains is randomly set so that we may set a dihedral to be something other than zero
 
 To analyze results, navigate to working_example/:
 
-- RDF_ACF_plots.ipynb = we use the Radial distribution function to measure aggregation over time and autocorrelation plots to ensure there are enough independent samples in a given sim
 - clustering_plots.ipynb = we use this to determine the magnitude of clustering over time in a simulation. this means both size and amount of clusters, also using independent samples
+- TPSvsN.ipynb = a notebook to graph TPS v. N
 
 In order to run a large scale simulation, navigate to signac/:
 

@@ -6,19 +6,19 @@ Analyzing how entropy-driven aggregation drives phase separation in mxene-polyme
 Run the following in your terminal:
 
 # bash/zsh
-git clone git@github.com:eridanrojas/mxene.git
+`git clone git@github.com:eridanrojas/mxene.git`
 
 # then navigate into mxene
-cd mxene
+`cd mxene`
 
 # Create the conda environment
-conda env create -f environment.yml
+`conda env create -f environment.yml`
 
 # Activate the environment
-conda activate mxene
+`conda activate mxene`
 
 # If GPU compatible version required of hoomd, run
-conda install -c conda-forge "hoomd=*=gpu*"
+`conda install -c conda-forge "hoomd=*=gpu*"`
 
 # Launch Jupyter
 
@@ -27,7 +27,7 @@ Run this at the command prompt: `jupyter notebook`
 
 Then, in order to run a small scale simulation, navigate to the example/ directory:
 
-- sim_no_shrink.ipynb = Our simulation without a shrink step written; will not wrk with dense systems
+- sim_no_shrink.ipynb = Our simulation without a shrink step written; will not work with dense systems
 - sim_with_shrink.ipynb = current working simulation you should use, shrink step is included allowing system to be packed loosely then shrunk to be dense, causing more interactions to occur
 - sim_with_randomwalk_chains.ipynb = a future notebook, has a shrink step but also manipulates the geometry of the chains is randomly set so that we may set a dihedral to be something other than zero
 - TPSvsN.ipynb = a notebook to graph TPS v. N

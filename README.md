@@ -37,5 +37,5 @@ To analyze results, navigate to working_example/:
 
 In order to run a large scale simulation, navigate to signac/:
 
-- submit.sh = running sbatch submit.sh will run sim_with_shrink.py as it currently is, with the configurations present in this file.
+- submit.sh = running `sbatch submit.sh` will run sim_with_shrink.py as it currently is, with the configurations present in this file.
 - sim_with_shrink.py = simulation file specifically made for running on cluster

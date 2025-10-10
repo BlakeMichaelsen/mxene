@@ -6,7 +6,7 @@ Analyzing how entropy-driven aggregation drives phase separation in mxene-polyme
 Run the following in your terminal:
 
 # bash/zsh
-`git clone git@github.com:eridanrojas/mxene.git`
+`git clone git@github.com:eridanirojas/mxene.git`
 
 # then navigate into mxene
 `cd mxene`

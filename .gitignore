@@ -5,3 +5,4 @@ __pycache__/
 *.txt
 *.out
 *.err
+serice_worker1.json
